@@ -2,7 +2,7 @@ const firstRow = "мама мыла раму";
 const secondRow = "собака друг человека";
 
 function getRow(){
-    let amountOfA, amountFirstrow, amountSecondrow;
+    let amountOfA;
 
     return (CountA(firstRow) > CountA(secondRow)) ? firstRow : secondRow ;
 
