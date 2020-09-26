@@ -40,6 +40,7 @@ body {
     position: relative;
     margin: 20px;
     display: flex;
+flex-direction: column; /*УСТАНОВИЛ КНОПКИ В КОЛОНКУ!!!*/
     justify-content: center;
     align-items: center;
 }
