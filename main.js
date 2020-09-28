@@ -9,6 +9,13 @@ const character = {
     counterRollbackGust: 0,
     elHP: document.getElementById('health-character'),
     elProgressbar: document.getElementById('progressbar-character'),
+    getDefaultHP: getDefaultHP,
+    changeHP: changeHP,
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressBarHP: renderProgressBarHP,
+    counterRollbackSill: counterRollbackSill,
+    getDefaultSkillCounter: getDefaultSkillCounter,
 }
 const enemy = {
     name: 'Charmander',
@@ -18,6 +25,13 @@ const enemy = {
     counterRollbackGust: 0,
     elHP: document.getElementById('health-enemy'),
     elProgressbar: document.getElementById('progressbar-enemy'),
+    getDefaultHP: getDefaultHP,
+    changeHP: changeHP,
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressBarHP: renderProgressBarHP,
+    counterRollbackSill: counterRollbackSill,
+    getDefaultSkillCounter: getDefaultSkillCounter,
 }
 
 init ();
@@ -27,72 +41,72 @@ $btnReset.addEventListener('click', function () {
 })
 
 function restart() {
-    getDefaultHP(character);
-    getDefaultHP(enemy);
-    getDefaultSkillCounter(character);
-    getDefaultSkillCounter(enemy);
+    character.getDefaultHP();
+    enemy.getDefaultHP();
+    character.getDefaultSkillCounter();
+    enemy.getDefaultSkillCounter();
     $btnThunder.disabled = false;
     $btnGust.disabled = false;
 }
 
-function getDefaultHP(person) {
-    person.damageHP = person.defaultHP;
-    renderHP(person);
+function getDefaultHP() {
+    this.damageHP = this.defaultHP;
+    this.renderHP();
 }
 
-function getDefaultSkillCounter(person) {
-    person.counterRollbackGust = 0;
+function getDefaultSkillCounter() {
+    this.counterRollbackGust = 0;
 }
 
 $btnGust.addEventListener('click', function () {
-    changeHP(random(10), enemy);
+    enemy.changeHP(random(10));
     $btnGust.disabled = true;
     judgingWhoWins();
 })
 
 $btnThunder.addEventListener('click', function () {
-    changeHP(random(20), character);
-    changeHP(random(20), enemy);
-    counterRollbackSill(character);
+    character.changeHP(random(20));
+    enemy.changeHP(random(20));
+    character.counterRollbackSill();
     judgingWhoWins();
 
 })
 
-function counterRollbackSill(person){
-    person.counterRollbackGust += 1;
-    if (person.counterRollbackGust === person.rollbackGust){
-        person.counterRollbackGust = 0;
+function counterRollbackSill(){
+    this.counterRollbackGust += 1;
+    if (this.counterRollbackGust === this.rollbackGust){
+        this.counterRollbackGust = 0;
         $btnGust.disabled = false;
     }
 }
 
 function init() {
-    renderHP(character);
-    renderHP(enemy);
+    character.renderHP();
+    enemy.renderHP();
 }
 
-function renderHP(person) {
-    renderHPLife(person);
-    renderProgressBarHP(person);
+function renderHP() {
+    this.renderHPLife();
+    this.renderProgressBarHP();
 }
 
-function renderHPLife(person) {
-    person.elHP.innerText = person.damageHP + ' / ' + person.defaultHP;
+function renderHPLife() {
+    this.elHP.innerText = this.damageHP + ' / ' + this.defaultHP;
 }
 
-function renderProgressBarHP(person){
-    person.elProgressbar.style.width = person.damageHP + '%';
+function renderProgressBarHP(){
+    this.elProgressbar.style.width = this.damageHP + '%';
 }
 
-function changeHP(count, person) {
-    if (person.damageHP < count){
-        person.damageHP = 0;
+function changeHP(count) {
+    if (this.damageHP < count){
+        this.damageHP = 0;
         $btnThunder.disabled = true;
     }
     else {
-        person.damageHP -= count;
+        this.damageHP -= count;
     }
-    renderHP(person);
+    this.renderHP();
 }
 
 function judgingWhoWins() {
@@ -101,7 +115,7 @@ function judgingWhoWins() {
             alert('Ничья')
         }
         else {
-            alert (character.damageHP > enemy.damageHP ? character.name : enemy.name);
+            alert ('победу одержал ' + (character.damageHP > enemy.damageHP ? character.name : enemy.name));
         }
     }
 }
