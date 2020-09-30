@@ -1,38 +1,49 @@
 const $btnThunder = document.getElementById('btn-kick');
 const $btnGust = document.getElementById('btn-kick2');
-const $btnReset = document.getElementsByClassName('logo')[0];
+const $btnReset = document.querySelector('.logo');
+const $logs = document.querySelector('#logs');
+const $p = document.createElement('p');
+
 const character = {
     name: 'Pikachu',
-    defaultHP: 100,
-    damageHP: 100,
+    hp: {
+        total: 100, //defaultHP: 100,
+        current: 100,//damageHP: 100,
+    },
     rollbackGust: 4,
     counterRollbackGust: 0,
     elHP: document.getElementById('health-character'),
     elProgressbar: document.getElementById('progressbar-character'),
-    getDefaultHP: getDefaultHP,
-    changeHP: changeHP,
-    renderHP: renderHP,
-    renderHPLife: renderHPLife,
-    renderProgressBarHP: renderProgressBarHP,
-    counterRollbackSill: counterRollbackSill,
-    getDefaultSkillCounter: getDefaultSkillCounter,
-}
+    getDefaultHP,
+    changeHP,
+    renderHP,
+    renderHPLife,
+    renderProgressBarHP,
+    counterRollbackSkill,
+    getDefaultSkillCounter,
+};
 const enemy = {
     name: 'Charmander',
-    defaultHP: 100,
-    damageHP: 100,
+    hp: {
+        total: 100, //defaultHP: 100,
+        current: 100,//damageHP: 100,
+    },
     rollbackGust: 4,
     counterRollbackGust: 0,
     elHP: document.getElementById('health-enemy'),
     elProgressbar: document.getElementById('progressbar-enemy'),
-    getDefaultHP: getDefaultHP,
-    changeHP: changeHP,
-    renderHP: renderHP,
-    renderHPLife: renderHPLife,
-    renderProgressBarHP: renderProgressBarHP,
-    counterRollbackSill: counterRollbackSill,
-    getDefaultSkillCounter: getDefaultSkillCounter,
-}
+     getDefaultHP,
+     changeHP,
+     renderHP,
+     renderHPLife,
+     renderProgressBarHP,
+     counterRollbackSkill,
+     getDefaultSkillCounter,
+};
+
+const {name} = character;
+const {name: nameEnemy} = enemy;
+
 
 init ();
 
@@ -50,7 +61,7 @@ function restart() {
 }
 
 function getDefaultHP() {
-    this.damageHP = this.defaultHP;
+    this.hp.current = this.hp.total;
     this.renderHP();
 }
 
@@ -67,12 +78,13 @@ $btnGust.addEventListener('click', function () {
 $btnThunder.addEventListener('click', function () {
     character.changeHP(random(20));
     enemy.changeHP(random(20));
-    character.counterRollbackSill();
+
+    character.counterRollbackSkill();
     judgingWhoWins();
 
 })
 
-function counterRollbackSill(){
+function counterRollbackSkill(){
     this.counterRollbackGust += 1;
     if (this.counterRollbackGust === this.rollbackGust){
         this.counterRollbackGust = 0;
@@ -85,41 +97,62 @@ function init() {
     enemy.renderHP();
 }
 
+
+function changeHP(count) {
+
+    if (this.hp.current < count){
+        this.hp.current = 0;
+        $btnThunder.disabled = true;
+    }
+    else {
+        this.hp.current -= count;
+    }
+
+    $p.innerText = generateLog(this, (this === character ? enemy : character), count);
+    $logs.insertBefore($p, $logs.children[0]);
+    this.renderHP();
+}
+
 function renderHP() {
     this.renderHPLife();
     this.renderProgressBarHP();
 }
 
 function renderHPLife() {
-    this.elHP.innerText = this.damageHP + ' / ' + this.defaultHP;
+    this.elHP.innerText = this.hp.current + ' / ' + this.hp.total;
 }
 
 function renderProgressBarHP(){
-    this.elProgressbar.style.width = this.damageHP + '%';
-}
-
-function changeHP(count) {
-    if (this.damageHP < count){
-        this.damageHP = 0;
-        $btnThunder.disabled = true;
-    }
-    else {
-        this.damageHP -= count;
-    }
-    this.renderHP();
+    this.elProgressbar.style.width = this.hp.current + '%';
 }
 
 function judgingWhoWins() {
-    if (character.damageHP === 0 || enemy.damageHP === 0){
-        if (character.damageHP === enemy.damageHP){
+    if (character.hp.current === 0 || enemy.hp.current === 0){
+        if (character.hp.current === enemy.hp.current){
             alert('Ничья')
         }
         else {
-            alert ('победу одержал ' + (character.damageHP > enemy.damageHP ? character.name : enemy.name));
+            alert ('победу одержал ' + (character.hp.current > enemy.hp.current ? name : nameEnemy));
         }
     }
 }
 
 function random(num) {
     return Math.ceil(Math.random()*num);
+}
+
+function generateLog(firstPerson, secondPerson, count) {
+    const logs = [
+        `${firstPerson.name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} поперхнулся, и за это ${secondPerson.name} с испугу приложил прямой удар коленом в лоб врага. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} забылся, но в это время наглый ${secondPerson.name}, приняв волевое решение, неслышно подойдя сзади, ударил. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} пришел в себя, но неожиданно ${secondPerson.name} случайно нанес мощнейший удар. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} поперхнулся, но в это время ${secondPerson.name} нехотя раздробил кулаком \<вырезанно цензурой\> противника. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} удивился, а ${secondPerson.name} пошатнувшись влепил подлый удар. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} высморкался, но неожиданно ${secondPerson.name} провел дробящий удар. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} пошатнулся, и внезапно наглый ${secondPerson.name} беспричинно ударил в ногу противника. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} расстроился, как вдруг, неожиданно ${secondPerson.name} случайно влепил стопой в живот соперника. -${count} / ${firstPerson.hp.current}`,
+        `${firstPerson.name} пытался что-то сказать, но вдруг, неожиданно ${secondPerson.name} со скуки, разбил бровь сопернику. -${count} / ${firstPerson.hp.current}`
+    ];
+    return logs[random(logs.length) - 1];
 }
