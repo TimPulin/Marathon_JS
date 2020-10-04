@@ -1,17 +1,20 @@
 const $btnThunder = document.getElementById('btn-kick');
 const $btnGust = document.getElementById('btn-kick2');
 const $btnReset = document.querySelector('.logo');
-const $logs = document.querySelector('#logs');
-const $p = document.createElement('p');
+const $btnKick = document.getElementsByClassName('buttonKick');
+const $logs = document.querySelector('#battle-log');
+
 
 const character = {
     name: 'Pikachu',
     hp: {
-        total: 100, //defaultHP: 100,
-        current: 100,//damageHP: 100,
+        total: 100,
+        current: 100,
     },
-    rollbackGust: 4,
-    counterRollbackGust: 0,
+    limitOfThunder: 10,
+    currentOfThunder: 10,
+    limitOfGust: 4,
+    currentOfGust: 4,
     elHP: document.getElementById('health-character'),
     elProgressbar: document.getElementById('progressbar-character'),
     getDefaultHP,
@@ -19,17 +22,13 @@ const character = {
     renderHP,
     renderHPLife,
     renderProgressBarHP,
-    counterRollbackSkill,
-    getDefaultSkillCounter,
 };
 const enemy = {
     name: 'Charmander',
     hp: {
-        total: 100, //defaultHP: 100,
-        current: 100,//damageHP: 100,
+        total: 100,
+        current: 100,
     },
-    rollbackGust: 4,
-    counterRollbackGust: 0,
     elHP: document.getElementById('health-enemy'),
     elProgressbar: document.getElementById('progressbar-enemy'),
      getDefaultHP,
@@ -37,15 +36,12 @@ const enemy = {
      renderHP,
      renderHPLife,
      renderProgressBarHP,
-     counterRollbackSkill,
-     getDefaultSkillCounter,
 };
 
-const {name} = character;
+const {name:nameCharacter, limitOfThunder, limitOfGust} = character;
 const {name: nameEnemy} = enemy;
-
-
-init ();
+const counterBtnThunder = counterKicks(limitOfThunder);
+const counterBtnGust = counterKicks(limitOfGust);
 
 $btnReset.addEventListener('click', function () {
     restart();
@@ -54,10 +50,11 @@ $btnReset.addEventListener('click', function () {
 function restart() {
     character.getDefaultHP();
     enemy.getDefaultHP();
-    character.getDefaultSkillCounter();
-    enemy.getDefaultSkillCounter();
     $btnThunder.disabled = false;
     $btnGust.disabled = false;
+    resetCurrentKicks();
+    renderHits($btnThunder, character.currentOfThunder);
+    renderHits($btnGust, character.currentOfGust);
 }
 
 function getDefaultHP() {
@@ -65,40 +62,57 @@ function getDefaultHP() {
     this.renderHP();
 }
 
-function getDefaultSkillCounter() {
-    this.counterRollbackGust = 0;
+function resetCurrentKicks() {
+    character.currentOfThunder = limitOfThunder
+    character.currentOfGust = limitOfGust;
 }
 
 $btnGust.addEventListener('click', function () {
     enemy.changeHP(random(10));
-    $btnGust.disabled = true;
     judgingWhoWins();
 })
 
 $btnThunder.addEventListener('click', function () {
     character.changeHP(random(20));
     enemy.changeHP(random(20));
-
-    character.counterRollbackSkill();
     judgingWhoWins();
-
 })
 
-function counterRollbackSkill(){
-    this.counterRollbackGust += 1;
-    if (this.counterRollbackGust === this.rollbackGust){
-        this.counterRollbackGust = 0;
-        $btnGust.disabled = false;
+function counterKicks(limitOfKicks){
+    return function (button){
+        limitOfKicks-=1;
+        return limitOfKicks
     }
 }
+
+$btnThunder.addEventListener('click', function () {
+    character.currentOfThunder = counterBtnThunder();
+    renderHits(this, character.currentOfThunder);
+})
+
+$btnGust.addEventListener('click', function () {
+    character.currentOfGust = counterBtnGust();
+    renderHits(this, character.currentOfGust);
+})
+
+function renderHits(button, limitOfKicks) {
+    if (limitOfKicks === 0){
+            button.disabled = true;
+    }
+    button.querySelector('.spaceForCountKick').innerText = limitOfKicks;
+}
+
+init ();
 
 function init() {
     character.renderHP();
     enemy.renderHP();
+    renderHits($btnThunder, character.currentOfThunder);
+    renderHits($btnGust, character.currentOfGust);
 }
 
-
 function changeHP(count) {
+    const $p = document.createElement('p');
 
     if (this.hp.current < count){
         this.hp.current = 0;
@@ -132,7 +146,7 @@ function judgingWhoWins() {
             alert('Ничья')
         }
         else {
-            alert ('победу одержал ' + (character.hp.current > enemy.hp.current ? name : nameEnemy));
+            alert ('победу одержал ' + (character.hp.current > enemy.hp.current ? nameCharacter : nameEnemy));
         }
     }
 }
