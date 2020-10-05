@@ -55,6 +55,7 @@ function restart() {
     resetCurrentKicks();
     renderHits($btnThunder, character.currentOfThunder);
     renderHits($btnGust, character.currentOfGust);
+    console.log(counterBtnThunder(character.currentOfThunder));
 }
 
 function getDefaultHP() {
@@ -65,6 +66,17 @@ function getDefaultHP() {
 function resetCurrentKicks() {
     character.currentOfThunder = limitOfThunder
     character.currentOfGust = limitOfGust;
+}
+
+for (let i=0; i<$btnKick.length; i++){
+    let button = $btnKick[i];
+    button.addEventListener('click', onBtnKickClick);
+}
+
+function onBtnKickClick(eventObj) {
+    const clickedElement = eventObj.currentTarget;
+    const btnKickName = clickedElement.name;
+    console.log(clickedElement)
 }
 
 $btnGust.addEventListener('click', function () {
@@ -79,19 +91,20 @@ $btnThunder.addEventListener('click', function () {
 })
 
 function counterKicks(limitOfKicks){
-    return function (button){
+    return function (current){
+        limitOfKicks = current;
         limitOfKicks-=1;
-        return limitOfKicks
+        return limitOfKicks;
     }
 }
 
 $btnThunder.addEventListener('click', function () {
-    character.currentOfThunder = counterBtnThunder();
+    character.currentOfThunder = counterBtnThunder(character.currentOfThunder);
     renderHits(this, character.currentOfThunder);
 })
 
 $btnGust.addEventListener('click', function () {
-    character.currentOfGust = counterBtnGust();
+    character.currentOfGust = counterBtnGust(character.currentOfGust);
     renderHits(this, character.currentOfGust);
 })
 
