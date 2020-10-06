@@ -1,0 +1,11 @@
+.idea/
+nod_modules/
+node_modules/.bin/ansi-html
+*.cmd
+*.ps1
+node_modules/.bin/atob
+node_modules/.bin/browserslist
+node_modules/.bin/errno
+node_modules/.bin/import-local-fixture
+node_modules/.bin/jsesc
+node_modules/.bin/json5
